@@ -164,12 +164,10 @@ func handleVersionFlag() {
 	if *versionFlag {
 		msg := "version=%s "
 		msg += "commit=%s "
-		msg += "branch=%s "
 		msg += "go_version=%s "
-		msg += "build_date=%s "
 		msg += "build_platform=%s\n"
 
-		fmt.Fprintf(os.Stderr, msg, version, gitCommit, gitBranch, goVersion, buildDate, buildPlatform)
+		fmt.Fprintf(os.Stderr, msg, version, gitCommit, goVersion, buildPlatform)
 		os.Exit(1)
 	}
 }

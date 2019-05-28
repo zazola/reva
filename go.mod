@@ -21,6 +21,7 @@ require (
 	github.com/prometheus/client_golang v0.9.3-0.20190127221311-3c4408c8b829
 	github.com/rs/cors v1.6.0
 	github.com/rs/zerolog v1.14.3
+	github.com/spf13/pflag v1.0.3
 	golang.org/x/crypto v0.0.0-20190411191339-88737f569e3a
 	golang.org/x/net v0.0.0-20190415214537-1da14a5a36f2 // indirect
 	golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be

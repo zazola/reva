@@ -1,0 +1,96 @@
+package main
+
+
+import (
+	"os"
+	"flag"
+	"regexp"
+	"io/ioutil"
+	"os/exec"
+	"fmt"
+)
+
+var oses = []string{"darwin", "linux"}
+var archs = []string{"amd64"}
+var versionRegex = regexp.MustCompile(`^\d+\.\d+\.\d+$`)
+var ip = flag.Int("flagname", 1234, "help message for flagname")
+var outputDirFlag = flag.String("output-dir", "", "output dir for build artifacts")
+
+func die(val interface{}) {
+	fmt.Fprintf(os.Stderr, "error: %+v", val)
+	os.Exit(1)
+}
+
+func get(cmd string) string {
+	out, err := exec.Command("bash", "-c", cmd).Output()
+	if err != nil {
+		die(err)
+	}
+	return string(out)
+}
+
+func runraw(c *exec.Cmd) {
+	err := c.Run()
+	if err != nil {
+		die(err)
+	}
+}
+
+type buildFlags struct {
+	gitCommit string
+	gitDirty string
+	version string
+	goVersion string
+	goArch string
+	goOS string
+}
+
+func obtainBuildFlags() *buildFlags {
+	bf := &buildFlags{}
+	bf.version = get(`git describe`)
+	bf.goVersion = get(`go version | awk '{print $3}'`)
+	bf.goArch = get(`go version | awk '{print $4}'`)
+	bf.gitCommit = get(`git rev-parse --short HEAD`)
+	bf.gitDirty = get(`git diff-index --quiet HEAD -- || echo "dirty-"`)
+	return bf
+}
+
+func createBuildDir() string {
+	d, err := ioutil.TempDir("", "reva")
+	if err != nil {die(err)}
+	return d
+}
+
+func createPackageDir(buildDir, os, arch, version string) string {
+	d, err := ioutil.TempDir("", "reva")
+	if err != nil {die(err)}
+	return d
+}
+
+func getVersion() string {
+	if len(os.Args) == 0 {
+		die("build <version>, like build 0.0.1")	
+	}
+	v := os.Args[0]
+	if !versionRegex.MatchString(v) {
+		die("version provided does not match format: <uint.uint.uint>")
+	}
+	return v
+}
+
+func build(binary, version, os, arch string, bf *buildFlags, outputDir string) {
+
+}
+
+func main() {
+	flag.Parse()
+	v := getVersion()
+	bf:= obtainBuildFlags()
+	for _, os := range oses {
+		for _, arch := range archs {
+			fmt.Println("building:",v,  os, arch, bf)
+			build("reva", v, os, arch, bf, *outputDirFlag)
+			build("revad", v, os, arch, bf, *outputDirFlag)
+		}
+	}
+}
